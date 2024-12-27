@@ -1,0 +1,107 @@
+version: '3.8'
+
+services:
+  mongodb_container:
+    image: mongo:latest
+    environment:
+      MONGO_INITDB_DATABASE: user
+    ports:
+      - 27017:27017
+    volumes:
+      - mongodb_data_container:/data/db
+    networks:
+      - hospital-network
+
+  eureka-server:
+    build: ./backend/eureka-server
+    ports:
+      - "8761:8761"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - hospital-network
+
+  gateway-server:
+    build: ./backend/gateway-server
+    ports:
+      - "8080:8080"
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+    networks:
+      - hospital-network
+
+  user-service:
+    build: ./backend/user-service
+    ports:
+      - "8082:8082"
+    depends_on:
+      - mongodb_container
+      - eureka-server
+    environment:
+      - SPRING_DATA_MONGODB_HOST=mongodb_container
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+    networks:
+      - hospital-network
+
+  patient-location-service:
+    build: ./backend/patient-location-service
+    ports:
+      - "5002:5002"
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+    environment:
+      - EUREKA_SERVER=http://eureka-server:8761/eureka
+      - INSTANCE_HOST=patient-location-service
+    networks:
+      - hospital-network
+
+  notification-service:
+    build: ./backend/notification-service
+    ports:
+      - "5000:5000"
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+    environment:
+      - EUREKA_SERVER=http://eureka-server:8761/eureka
+      - INSTANCE_HOST=notification-service
+    networks:
+      - hospital-network
+
+  hallway-detection-service:
+    build: ./backend/hallway-detection-service
+    ports:
+      - "5001:5001"
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+    environment:
+      - EUREKA_SERVER=http://eureka-server:8761/eureka
+      - INSTANCE_HOST=hallway-detection-service
+    networks:
+      - hospital-network
+
+  frontend:
+    build: 
+      context: ./frontend/web
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - gateway-server
+    networks:
+      - hospital-network
+
+networks:
+  hospital-network:
+    driver: bridge
+
+volumes:
+  mongodb_data_container: 

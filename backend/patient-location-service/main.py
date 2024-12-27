@@ -6,20 +6,68 @@ from pyzbar.pyzbar import decode
 import base64
 import logging
 import json
+import py_eureka_client.eureka_client as eureka_client
+from dotenv import load_dotenv
+import os
+
+# Load environment variables
+load_dotenv()
+
+# Logging configuration
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 CORS(app)
-logging.basicConfig(level=logging.DEBUG)
 
-# Mock user data 
+# Eureka configuration
+EUREKA_SERVER = os.getenv("EUREKA_SERVER", "http://localhost:8761/eureka")
+APP_NAME = os.getenv("APP_NAME", "PATIENT-LOCATION-SERVICE")
+PORT = int(os.getenv("PORT", "5002"))
+INSTANCE_HOST = os.getenv("INSTANCE_HOST", "localhost")
+
+# Mock user data matching the User entity structure
 MOCK_USER = {
     "id": "12345",
-    "name": "John Doe",
-    "age": 45,
-    "room": "B-203",
-    "condition": "Stable",
-    "admission_date": "2024-03-15"
+    "username": "john.doe",
+    "roles": [
+        {
+            "id": "1",
+            "name": "PATIENT"
+        }
+    ]
 }
+
+# Initialize eureka client
+def register_with_eureka():
+    try:
+        eureka_client.init(
+            eureka_server=EUREKA_SERVER,
+            app_name=APP_NAME,
+            instance_port=PORT,
+            instance_host=INSTANCE_HOST
+        )
+        logger.info(f"Successfully registered with Eureka server at {EUREKA_SERVER}")
+    except Exception as e:
+        logger.error(f"Failed to register with Eureka server: {e}")
+        raise
+
+# Register with Eureka on startup
+register_with_eureka()
+
+# Add health check endpoint for Eureka
+@app.route('/health', methods=['GET'])
+def health_check():
+    return jsonify({"status": "UP"})
+
+# Add info endpoint for Eureka
+@app.route('/info', methods=['GET'])
+def info():
+    return jsonify({
+        "app_name": APP_NAME,
+        "version": "1.0.0",
+        "status": "Running"
+    })
 
 @app.route('/scan', methods=['POST'])
 def scan_qr_code():
@@ -91,4 +139,4 @@ def scan_qr_code():
         return jsonify({'error': str(e)}), 500
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=PORT)

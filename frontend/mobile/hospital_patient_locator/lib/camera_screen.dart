@@ -6,29 +6,22 @@ import 'dart:typed_data';
 
 class PatientInfo {
   final String id;
-  final String name;
-  final int age;
-  final String room;
-  final String condition;
-  final String admissionDate;
+  final String username;
+  final List<String> roles;
 
   PatientInfo({
     required this.id,
-    required this.name,
-    required this.age,
-    required this.room,
-    required this.condition,
-    required this.admissionDate,
+    required this.username,
+    required this.roles,
   });
 
   factory PatientInfo.fromJson(Map<String, dynamic> json) {
     return PatientInfo(
-      id: json['id'],
-      name: json['name'],
-      age: json['age'],
-      room: json['room'],
-      condition: json['condition'],
-      admissionDate: json['admission_date'],
+      id: json['id'] ?? '',
+      username: json['username'] ?? '',
+      roles: (json['roles'] as List<dynamic>?)?.map((role) => 
+        (role['name'] ?? '').toString()
+      ).toList() ?? [],
     );
   }
 }
@@ -96,7 +89,7 @@ class _CameraScreenState extends State<CameraScreen> {
       final base64Image = base64Encode(bytes);
       
       final response = await http.post(
-        Uri.parse('http://192.168.8.111:5000/scan'),
+        Uri.parse('http://192.168.100.99:5002/scan'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'image': 'data:image/jpeg;base64,$base64Image',
@@ -108,14 +101,21 @@ class _CameraScreenState extends State<CameraScreen> {
 
       if (response.statusCode == 200) {
         final result = jsonDecode(response.body);
-        if (result['success'] && result['results'].isNotEmpty) {
+        if (result['success'] == true && 
+            result['results'] != null && 
+            result['results'].isNotEmpty &&
+            result['results'][0]['user'] != null) {
           final userInfo = PatientInfo.fromJson(result['results'][0]['user']);
-          print('QR Code Content: ${result['results'][0]['qr_data']}');
-          print('User ID: ${userInfo.id}');
+          print('Raw user data: ${result['results'][0]['user']}');
+          print('Room number: ${result['results'][0]['qr_data']}');
+          print('User id: ${userInfo.id}');
+          print('Username: ${userInfo.username}');
+          print('Roles: ${userInfo.roles}');
         }
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
       print('Error detecting QR code: $e');
+      print('Stack trace: $stackTrace');
     }
   }
 
