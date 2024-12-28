@@ -1,101 +1,95 @@
 # Hospital Patient Locator
 
-Ce projet est une application distribuée permettant de localiser les patients dans un hôpital. L'architecture comprend plusieurs microservices basés sur Spring Boot et un conteneur MongoDB pour le stockage des données.
+## Overview
+The Hospital Patient Locator is a microservice application designed to track and manage patient locations within a hospital environment. This system provides real-time tracking, movement detection, and health data management through a microservices architecture.
 
----
+## Key Features
+- Real-time patient location tracking
+- Hallway movement detection
+- Health data management
+- User authentication and authorization
+- Mobile and web interfaces
+- Real-time notifications
+- QR code-based location tracking
 
-## Prérequis
+## Architecture
 
-Avant de commencer, assurez-vous d'avoir les éléments suivants installés :
+### Backend Services
+- **Eureka Server** (Port: 8761): Service discovery and registration
+- **Gateway Server** (Port: 8080): API gateway for routing and load balancing
+- **User Service** (Port: 8082): Handles authentication and user management
+- **Patient Location Service** (Port: 5002): Manages real-time patient location data
+- **Hallway Detection Service** (Port: 5001): Processes movement detection in hospital hallways
+- **Notification Service** (Port: 5000): Manages alerts and notifications
+- **Health Data Service**: Manages patient health information
 
-- **Docker** et **Docker Compose**
-- **Java 17** ou supérieur
-- **Maven**
-- **Node.js** et **npm** (pour le frontend web et mobile)
+### Frontend Applications
+- **Web Application** (Port: 3000): React-based admin interface
+- **Mobile Application**: Flutter-based mobile app for staff
 
----
+## Prerequisites
+- Docker and Docker Compose
+- Java 17 or higher
+- Maven
+- Node.js and npm
+- MongoDB
 
-## Architecture des Services
+## Quick Start with Docker Compose
 
-### Backend
-- **eureka-server** : Serveur de registre pour la découverte des services.
-- **gateway-server** : Passerelle pour acheminer les requêtes vers les services appropriés.
-- **health-data-service** : Gestion des données de santé des patients.
-- **hallway-detection-service** : Détection des mouvements des patients dans les couloirs.
-- **notification-service** : Envoi de notifications en cas d'événements importants.
-- **patient-location-service** : Localisation en temps réel des patients.
-- **user-service** : Gestion des utilisateurs et de l'authentification.
+1. Clone the repository:
+- git clone 
+2. Run the following command in terminal :
+- docker compose up -d
+  
+## API Documentation
+- Eureka Dashboard: http://localhost:8761
+- API Gateway: http://localhost:8080
+- User Service: http://localhost:8082
+- Patient Location Service: http://localhost:5002
+- Notification Service: http://localhost:5000
+- Hallway Detection Service: http://localhost:5001
 
-### Frontend
-- **mobile** : Application mobile pour accéder aux informations de localisation.
-- **web** : Application web pour les administrateurs et le personnel hospitalier.
+## Service Endpoints
 
----
+### User Service
+- POST `/api/register`: Register a new user
+- POST `/api/login`: User authentication
+- GET `/api/user/{username}`: Get user details
 
-## Instructions pour exécuter les services
+### Patient Location Service
+- GET `/api/localisations/last`: Get latest patient locations
+- POST `/api/localisations`: Update patient location
+- GET `/api/localisations/{patientId}`: Get specific patient location
 
-### 1. Démarrer la base de données MongoDB
+### Notification Service
+- POST `/api/notifications/send`: Send new notification
+- GET `/api/notifications/{userId}`: Get user notifications
 
-Créez un fichier `docker-compose.yml` dans le répertoire racine du projet avec le contenu suivant :
+## Security
+- JWT-based authentication
+- Role-based access control
+- Secure API gateway
+- CORS configuration
 
-```yaml
-version: '3.8'
+## Troubleshooting
+1. If services fail to register with Eureka:
+   - Ensure Eureka server is running
+   - Check network connectivity
+   - Verify service configurations
 
-services:
-  mongodb_container:
-    image: mongo:latest
-    container_name: mongodb_container
-    environment:
-      MONGO_INITDB_DATABASE: hospital
-    ports:
-      - 27017:27017
-    volumes:
-      - mongodb_data_container:/data/db
+2. If MongoDB connection fails:
+   - Verify MongoDB container is running
+   - Check connection string
+   - Ensure network connectivity
 
-volumes:
-  mongodb_data_container:
-```
+3. Frontend connection issues:
+   - Verify API gateway is running
+   - Check CORS configuration
+   - Ensure proper endpoint URLs
 
-Ensuite, exécutez la commande suivante pour démarrer MongoDB :
-```yaml
-docker-compose up -d
-```
-### 2. Démarrer le serveur Eureka
-Naviguez dans le dossier eureka-server et exécutez les commandes suivantes :
-```yaml
-mvn clean install
-java -jar target/eureka-server-0.0.1-SNAPSHOT.jar
-```
-### 3. Démarrer le Gateway Server
-Naviguez dans le dossier gateway-server et exécutez les commandes suivantes:
-```yaml
-mvn clean install
-java -jar target/gateway-server-0.0.1-SNAPSHOT.jar
-```
-### 4. Démarrer les autres microservices
-Répétez les étapes suivantes pour chaque service dans les dossiers suivants :
-health-data-service, hallway-detection-service, notification-service, patient-location-service, user-service.
-```yaml
-mvn clean install
-java -jar target/{nom-du-service}-0.0.1-SNAPSHOT.jar
-```
-### 5. Démarrer le frontend Web
-Naviguez dans le dossier frontend/web et exécutez les commandes suivantes :
-```yaml
-npm install
-npm start
-```
-### 6. Démarrer l'application mobile
-Naviguez dans le dossier frontend/mobile et exécutez les commandes suivantes :
-```yaml
-npm install
-npm start
-```
----
-
-
-
-
-
-
-
+## Contributions 
+- [AAFIF Khawla](https://github.com/KhawlaAAFIF)
+- [AIT EL GAZZAR Mohammed](https://github.com/MohammedAitelgazzar)
+- [AIT KIKA Marouane](https://github.com/Marouane124)
+- [RABQAUI Nabila](https://github.com/nabilarabqaoui)
+- [Souadi Chayma](https://github.com/Chayma-05) 
