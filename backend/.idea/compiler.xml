@@ -9,6 +9,9 @@
         <outputRelativeToContentRoot value="true" />
         <module name="app (2)" />
         <module name="app (1)" />
+        <module name="user" />
+        <module name="eureka" />
+        <module name="gateway" />
         <module name="covoiturage" />
       </profile>
       <profile name="Annotation profile for health_data_service" enabled="true">
@@ -30,6 +33,9 @@
       <module name="app (2)" options="-parameters" />
       <module name="app (3)" options="-parameters" />
       <module name="covoiturage" options="-parameters" />
+      <module name="eureka" options="-parameters" />
+      <module name="gateway" options="-parameters" />
+      <module name="user" options="-parameters" />
     </option>
   </component>
 </project>

@@ -1,38 +1,31 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import "./Signup.css"; 
-import { register } from "../service/apiService";
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import '../style/Signup.css'; 
 
 const SignUp = () => {
   const [formData, setFormData] = useState({
     name: "",
     username: "",
     password: "",
-    role: "PASSAGER", 
+    role: "PATIENT",
   });
-
-  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    try {
-      const response = await register(formData);
-      console.log("Registration successful:", response);
-      navigate('/');
-    } catch (error) {
-      console.error("Registration failed:", error);
-      alert(error.message || 'Registration failed');
-    }
+    console.log("Sign Up Data: ", formData);
   };
 
   return (
     <div className="signup-container">
       <div className="signup-card">
+      <div className="login-image">
+          <img src={require("../assets/hospitallogin.png")} alt="Medical Illustration" />
+        </div>
         <h2 className="form-title">Sign Up</h2>
         <form onSubmit={handleSubmit}>
           <div className="input-group">
@@ -79,9 +72,8 @@ const SignUp = () => {
               value={formData.role}
               onChange={handleChange}
             >
-              <option value="ADMIN">Admin</option>
-              <option value="PASSAGER">Passager</option>
-              <option value="CONDUCTEUR">Conducteur</option>
+              <option value="DOCTEUR">Docteur</option>
+              <option value="PATIENT">Patient</option>
             </select>
           </div>
           <button type="submit" className="signup-button">Sign Up</button>
