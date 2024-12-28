@@ -3,8 +3,14 @@
 ## Overview
 The Hospital Patient Locator is a microservice application designed to track and manage patient locations within a hospital environment. This system provides real-time tracking, movement detection, and health data management through a microservices architecture.
 
-## Video Demostration
-https://github.com/user-attachments/assets/963cb973-7792-4e8e-98bb-b3fb7dae15fa
+## Video Demostrations
+QR Scanning with real time location mapping and notificating :
+
+https://github.com/user-attachments/assets/4f0ab823-47eb-42b8-8fce-024198b8b8bf
+
+Login feature : 
+
+https://github.com/user-attachments/assets/903709da-4d60-494f-bc01-2eb81de4ac94
 
 ## Key Features
 - Real-time patient location tracking
